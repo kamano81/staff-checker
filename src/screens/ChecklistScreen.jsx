@@ -153,7 +153,7 @@ const AREA_TABS = [
 
 const ROLL_LABELS = { personal: 'Personal', tl: 'TL', 'tl-ass': 'TL Ass' }
 
-export default function ChecklistScreen({ people, onUpdate, onExport, onBack }) {
+export default function ChecklistScreen({ people, onUpdate, onExport, onBack, onReset }) {
   const [search, setSearch] = useState('')
   const [activeArea, setActiveArea] = useState('Alla')
   const [activePosition, setActivePosition] = useState('Alla')
@@ -227,7 +227,10 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack }) 
             {' · '}
             <span>{stats.total - stats.in - stats.out} väntar</span>
           </div>
-          <button onClick={onExport} className="text-blue-600 font-medium text-sm">Export</button>
+          <div className="flex gap-3">
+            <button onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }} className="text-red-400 font-medium text-sm">Rensa</button>
+            <button onClick={onExport} className="text-blue-600 font-medium text-sm">Export</button>
+          </div>
         </div>
 
         <div className="px-4 pb-2 flex gap-2">

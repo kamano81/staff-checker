@@ -102,13 +102,13 @@ function PersonRow({ person, onUpdate }) {
       </div>
 
       {/* Status + actions */}
-      <div className="shrink-0 flex flex-col items-end gap-1 min-w-[72px]">
+      <div className="shrink-0 flex flex-col items-end gap-1 min-w-[48px]">
         {!person.checkedIn && (
           <button
             onClick={checkIn}
-            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors"
+            className="w-12 h-12 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors"
           >
-            ✓ IN
+            IN
           </button>
         )}
 
@@ -117,7 +117,7 @@ function PersonRow({ person, onUpdate }) {
             <span className="text-xs font-semibold text-green-600">IN {fmt(person.checkedInAt)}</span>
             <button
               onClick={checkOut}
-              className="w-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors"
+              className="w-12 h-12 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-bold rounded-xl transition-colors"
             >
               UT
             </button>

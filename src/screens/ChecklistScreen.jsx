@@ -25,6 +25,10 @@ function avatarColor(name) {
   return colors[hash % colors.length]
 }
 
+function abbr(text) {
+  return (text ?? '').replace(/Entré /g, 'E ').replace(/Hiss /g, 'H ').replace(/Plan /g, 'P ')
+}
+
 function statusBg(person) {
   if (person.checkedOut) return 'bg-gray-50'
   if (person.checkedIn) return 'bg-green-50'
@@ -66,7 +70,7 @@ function PersonRow({ person, onUpdate }) {
         <p className="text-xs text-gray-400 truncate">
           {person.roll === 'tl' || person.roll === 'tl-ass'
             ? [person.passStart, person.passEnd].filter(Boolean).join('–')
-            : [person.position, person.teamleader, [person.passStart, person.passEnd].filter(Boolean).join('–')].filter(Boolean).join(' · ')
+            : [abbr(person.position), person.teamleader, [person.passStart, person.passEnd].filter(Boolean).join('–')].filter(Boolean).join(' · ')
           }
         </p>
       </div>
@@ -115,7 +119,7 @@ function PersonRow({ person, onUpdate }) {
               onClick={checkOut}
               className="w-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors"
             >
-              → UT
+              UT
             </button>
           </>
         )}

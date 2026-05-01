@@ -10,45 +10,37 @@ function abbr(text) {
   return (text ?? '').replace(/Entré /g, 'E ').replace(/Hiss /g, 'H ').replace(/Plan /g, 'P ')
 }
 
-function statusBg(person) {
-  if (person.checkedOut) return 'bg-zinc-950 opacity-50'
-  if (person.checkedIn) return 'bg-zinc-900 border-l-2 border-l-emerald-500'
-  return 'bg-zinc-900'
-}
-
 function PersonRow({ person, onUpdate }) {
   const radioRef = useRef(null)
   const kortRef = useRef(null)
 
-  function checkIn() {
-    onUpdate({ checkedIn: true, checkedInAt: new Date().toISOString() })
-  }
-  function checkOut() {
-    onUpdate({ checkedOut: true, checkedOutAt: new Date().toISOString() })
-  }
-  function undoIn() {
-    onUpdate({ checkedIn: false, checkedInAt: null, checkedOut: false, checkedOutAt: null })
-  }
-  function undoOut() {
-    onUpdate({ checkedOut: false, checkedOutAt: null })
-  }
+  function checkIn() { onUpdate({ checkedIn: true, checkedInAt: new Date().toISOString() }) }
+  function checkOut() { onUpdate({ checkedOut: true, checkedOutAt: new Date().toISOString() }) }
+  function undoIn() { onUpdate({ checkedIn: false, checkedInAt: null, checkedOut: false, checkedOutAt: null }) }
+  function undoOut() { onUpdate({ checkedOut: false, checkedOutAt: null }) }
+
+  const muted = person.checkedOut
 
   return (
-    <div className={`border-b border-zinc-800 px-4 py-3 flex items-center gap-3 ${statusBg(person)}`}>
-      {/* Name + position */}
+    <div className={`border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 ${person.checkedIn && !person.checkedOut ? 'border-l-[3px] border-l-emerald-500' : ''} ${muted ? 'opacity-40' : ''}`}>
+      {/* Name + info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <p className={`font-bold text-sm truncate ${person.checkedOut ? 'text-zinc-600' : 'text-white'}`}>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="font-black text-[15px] leading-tight text-gray-950 truncate">
             {person.name || '(inget namn)'}
           </p>
           {person.roll === 'tl' && (
-            <span className="shrink-0 text-[9px] font-bold bg-white text-zinc-950 px-1.5 py-0.5 rounded whitespace-nowrap">{person.teamleader}</span>
+            <span className="shrink-0 text-[9px] font-black bg-gray-950 text-white px-2 py-0.5 rounded-full tracking-wide whitespace-nowrap">
+              {person.teamleader}
+            </span>
           )}
           {person.roll === 'tl-ass' && (
-            <span className="shrink-0 text-[9px] font-bold bg-zinc-600 text-white px-1.5 py-0.5 rounded whitespace-nowrap">{person.teamleader}</span>
+            <span className="shrink-0 text-[9px] font-bold border border-gray-300 text-gray-500 px-2 py-0.5 rounded-full whitespace-nowrap">
+              {person.teamleader}
+            </span>
           )}
         </div>
-        <p className="text-xs text-zinc-500 truncate">
+        <p className="text-[11px] text-gray-400 mt-0.5 truncate">
           {person.roll === 'tl' || person.roll === 'tl-ass'
             ? [person.passStart, person.passEnd].filter(Boolean).join('–')
             : [abbr(person.position), person.teamleader, [person.passStart, person.passEnd].filter(Boolean).join('–')].filter(Boolean).join(' · ')
@@ -58,48 +50,35 @@ function PersonRow({ person, onUpdate }) {
 
       {/* Radio + Kort */}
       <div className="flex gap-1.5 shrink-0 ml-auto">
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[9px] text-zinc-600 uppercase tracking-wide">Radio</span>
-          <input
-            ref={radioRef}
-            className="w-12 border border-zinc-700 rounded-lg px-1.5 py-1 text-xs text-center text-white outline-none focus:border-zinc-400 bg-zinc-800"
-            placeholder="nr"
-            value={person.radio}
-            onChange={e => onUpdate({ radio: e.target.value })}
-            inputMode="numeric"
-          />
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[9px] text-zinc-600 uppercase tracking-wide">Kort</span>
-          <input
-            ref={kortRef}
-            className="w-12 border border-zinc-700 rounded-lg px-1.5 py-1 text-xs text-center text-white outline-none focus:border-zinc-400 bg-zinc-800"
-            placeholder="nr"
-            value={person.kort}
-            onChange={e => onUpdate({ kort: e.target.value })}
-            inputMode="numeric"
-          />
-        </div>
+        {['Radio', 'Kort'].map((label, i) => (
+          <div key={label} className="flex flex-col items-center gap-0.5">
+            <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">{label}</span>
+            <input
+              ref={i === 0 ? radioRef : kortRef}
+              className="w-12 border border-gray-200 rounded-xl px-1.5 py-1.5 text-xs font-bold text-center text-gray-900 outline-none focus:border-gray-900 bg-gray-50 transition-colors"
+              placeholder="–"
+              value={i === 0 ? person.radio : person.kort}
+              onChange={e => onUpdate(i === 0 ? { radio: e.target.value } : { kort: e.target.value })}
+              inputMode="numeric"
+            />
+          </div>
+        ))}
       </div>
 
-      {/* Status + actions */}
+      {/* Action */}
       <div className="shrink-0 flex flex-col items-end gap-1 min-w-[48px]">
         {!person.checkedIn && (
-          <button
-            onClick={checkIn}
-            className="w-10 h-10 bg-emerald-500 active:bg-emerald-600 text-white text-xs font-bold rounded-xl transition-colors"
-          >
+          <button onClick={checkIn}
+            className="w-10 h-10 bg-gray-950 text-white text-xs font-black rounded-2xl active:scale-95 transition-transform">
             IN
           </button>
         )}
 
         {person.checkedIn && !person.checkedOut && (
           <>
-            <span className="text-xs font-bold text-emerald-400">IN {fmt(person.checkedInAt)}</span>
-            <button
-              onClick={checkOut}
-              className="w-10 h-10 bg-orange-500 active:bg-orange-600 text-white text-xs font-bold rounded-xl transition-colors"
-            >
+            <span className="text-[11px] font-black text-emerald-500 tabular-nums">IN {fmt(person.checkedInAt)}</span>
+            <button onClick={checkOut}
+              className="w-10 h-10 bg-orange-500 text-white text-xs font-black rounded-2xl active:scale-95 transition-transform">
               UT
             </button>
           </>
@@ -107,14 +86,14 @@ function PersonRow({ person, onUpdate }) {
 
         {person.checkedOut && (
           <>
-            <span className="text-[10px] text-zinc-600">IN {fmt(person.checkedInAt)}</span>
-            <span className="text-[10px] text-zinc-600">UT {fmt(person.checkedOutAt)}</span>
-            <button onClick={undoOut} className="text-[10px] text-zinc-500 underline">Ångra UT</button>
+            <span className="text-[10px] text-gray-400 tabular-nums">IN {fmt(person.checkedInAt)}</span>
+            <span className="text-[10px] text-gray-400 tabular-nums">UT {fmt(person.checkedOutAt)}</span>
+            <button onClick={undoOut} className="text-[10px] text-gray-400 underline">Ångra</button>
           </>
         )}
 
         {person.checkedIn && !person.checkedOut && (
-          <button onClick={undoIn} className="text-[10px] text-zinc-600 underline">Ångra IN</button>
+          <button onClick={undoIn} className="text-[10px] text-gray-300 underline">Ångra</button>
         )}
       </div>
     </div>
@@ -143,7 +122,6 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
   const [sortBy, setSortBy] = useState('namn')
 
   const activeTab = AREA_TABS.find(t => t.label === activeArea) ?? AREA_TABS[0]
-
   const positionTabs = activeArea === 'Alla'
     ? ['Alla', ...ALL_POSITIONS]
     : ['Alla', ...[...new Set(activeTab.tls.flatMap(tl => getPositionsForTL(tl)))]]
@@ -194,102 +172,84 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
     out: people.filter(p => p.checkedOut).length,
   }
 
-  const pillActive = 'bg-white text-zinc-950 font-semibold'
-  const pillInactive = 'bg-zinc-800 text-zinc-400'
+  const pill = (active) =>
+    active
+      ? 'bg-gray-950 text-white font-bold'
+      : 'bg-white border border-gray-200 text-gray-500 font-medium'
 
   return (
-    <div className="flex flex-col min-h-svh bg-zinc-950">
+    <div className="flex flex-col min-h-svh bg-white">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-zinc-950 border-b border-zinc-800">
-        <div className="flex items-center justify-between px-4 py-3">
-          <button onClick={onBack} className="text-zinc-400 font-medium text-sm">← Redigera</button>
-          <div className="text-xs font-semibold text-center">
-            <span className="text-emerald-400">{stats.in} inne</span>
-            <span className="text-zinc-600"> · </span>
-            <span className="text-zinc-400">{stats.out} slutat</span>
-            <span className="text-zinc-600"> · </span>
-            <span className="text-zinc-500">{stats.total - stats.in - stats.out} väntar</span>
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+          <button onClick={onBack} className="text-gray-400 font-bold text-sm tracking-wide">← REDIGERA</button>
+          <div className="text-xs font-black text-center tracking-wide">
+            <span className="text-emerald-500">{stats.in} INNE</span>
+            <span className="text-gray-200"> · </span>
+            <span className="text-gray-400">{stats.out} SLUTAT</span>
+            <span className="text-gray-200"> · </span>
+            <span className="text-gray-300">{stats.total - stats.in - stats.out} VÄNTAR</span>
           </div>
-          <div className="flex gap-3">
-            <button onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }} className="text-red-500 font-medium text-sm">Rensa</button>
-            <button onClick={onExport} className="text-white font-semibold text-sm">Export</button>
+          <div className="flex gap-3 items-center">
+            <button onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }} className="text-gray-300 font-bold text-sm tracking-wide">RENSA</button>
+            <button onClick={onExport} className="bg-gray-950 text-white text-xs font-black px-3 py-1.5 rounded-full tracking-wide">EXPORT</button>
           </div>
         </div>
 
-        <div className="px-4 pb-2 flex gap-2">
+        <div className="px-4 pb-3 flex gap-2">
           <input
             type="search"
             placeholder="Sök namn eller position..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-zinc-800 rounded-xl px-4 py-2 text-sm text-white outline-none placeholder-zinc-500"
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2 text-sm font-medium text-gray-900 outline-none focus:border-gray-400 placeholder-gray-300 transition-colors"
           />
           <button
             onClick={() => setShowFilters(f => !f)}
-            className={`shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-              hasActiveFilters ? 'bg-white text-zinc-950' : showFilters ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'
+            className={`shrink-0 px-4 py-2 rounded-2xl text-xs font-black tracking-wide transition-colors ${
+              hasActiveFilters ? 'bg-gray-950 text-white' : 'bg-gray-50 border border-gray-200 text-gray-500'
             }`}
           >
-            Filter{hasActiveFilters ? ' ●' : ''}
+            FILTER{hasActiveFilters ? ' ●' : ''}
           </button>
         </div>
 
         {showFilters && (
-          <div className="px-4 pb-3 flex flex-col gap-2 border-t border-zinc-800 pt-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest w-12 shrink-0">Sort</span>
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
-                {[['namn', 'A–Ö'], ['position', 'Position'], ['tid', 'Tid']].map(([val, label]) => (
-                  <button key={val} onClick={() => setSortBy(val)}
-                    className={`shrink-0 px-3 py-1 rounded-full text-xs transition-colors ${sortBy === val ? pillActive : pillInactive}`}>
-                    {label}
-                  </button>
-                ))}
+          <div className="px-4 pb-3 flex flex-col gap-2.5 border-t border-gray-100 pt-3">
+            {[
+              { label: 'SORT', items: [['namn','A–Ö'],['position','Position'],['tid','Tid']], active: sortBy, set: setSortBy },
+              { label: 'ROLL', items: ['Alla','personal','tl','tl-ass'].map(r => [r, r === 'Alla' ? 'Alla' : ROLL_LABELS[r]]), active: activeRoll, set: setActiveRoll },
+              { label: 'STATUS', items: ['Alla','Väntar','Inne','Slutat'].map(s => [s,s]), active: activeStatus, set: setActiveStatus },
+            ].map(({ label, items, active, set }) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest w-12 shrink-0">{label}</span>
+                <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+                  {items.map(([val, lbl]) => (
+                    <button key={val} onClick={() => set(val)}
+                      className={`shrink-0 px-3 py-1 rounded-full text-xs transition-colors ${pill(active === val)}`}>
+                      {lbl}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest w-12 shrink-0">Roll</span>
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
-                {['Alla', 'personal', 'tl', 'tl-ass'].map(r => (
-                  <button key={r} onClick={() => setActiveRoll(r)}
-                    className={`shrink-0 px-3 py-1 rounded-full text-xs transition-colors ${activeRoll === r ? pillActive : pillInactive}`}>
-                    {r === 'Alla' ? 'Alla' : ROLL_LABELS[r]}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest w-12 shrink-0">Status</span>
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
-                {['Alla', 'Väntar', 'Inne', 'Slutat'].map(s => (
-                  <button key={s} onClick={() => setActiveStatus(s)}
-                    className={`shrink-0 px-3 py-1 rounded-full text-xs transition-colors ${activeStatus === s ? pillActive : pillInactive}`}>
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
         <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-none">
           {AREA_TABS.map(({ label }) => (
             <button key={label} onClick={() => handleAreaChange(label)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                activeArea === label ? pillActive : pillInactive
-              }`}>
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs transition-colors ${pill(activeArea === label)}`}>
               {label}{label !== 'Alla' && activeArea === label ? ' ▾' : ''}
             </button>
           ))}
         </div>
 
         {activeArea !== 'Alla' && (
-          <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-none border-t border-zinc-800 pt-2">
+          <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-none border-t border-gray-100 pt-2">
             {positionTabs.map(pos => (
               <button key={pos} onClick={() => setActivePosition(pos)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                  activePosition === pos ? 'bg-zinc-200 text-zinc-950' : pillInactive
-                }`}>
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs transition-colors ${pill(activePosition === pos)}`}>
                 {pos}
               </button>
             ))}
@@ -297,24 +257,20 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
         )}
 
         {/* Column headers */}
-        <div className="flex items-center gap-3 px-4 py-1.5 bg-zinc-900 border-t border-zinc-800">
-          <div className="flex-1 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Namn</div>
-          <div className="shrink-0 w-[104px] text-[10px] font-bold text-zinc-600 uppercase tracking-widest text-center">Radio / Kort</div>
-          <div className="shrink-0 w-[48px] text-[10px] font-bold text-zinc-600 uppercase tracking-widest text-right">Status</div>
+        <div className="flex items-center gap-3 px-4 py-2 border-t border-gray-100 bg-gray-50">
+          <div className="flex-1 text-[9px] font-black text-gray-300 uppercase tracking-widest">Namn</div>
+          <div className="shrink-0 w-[104px] text-[9px] font-black text-gray-300 uppercase tracking-widest text-center">Radio / Kort</div>
+          <div className="shrink-0 w-[48px] text-[9px] font-black text-gray-300 uppercase tracking-widest text-right">Status</div>
         </div>
       </div>
 
       {/* List */}
       <div className="flex-1">
         {filtered.length === 0 && (
-          <p className="text-center text-zinc-600 text-sm py-12">Inga resultat</p>
+          <p className="text-center text-gray-300 text-sm font-bold py-16 tracking-wide">INGA RESULTAT</p>
         )}
         {filtered.map(person => (
-          <PersonRow
-            key={person.id}
-            person={person}
-            onUpdate={changes => onUpdate(person.id, changes)}
-          />
+          <PersonRow key={person.id} person={person} onUpdate={changes => onUpdate(person.id, changes)} />
         ))}
       </div>
     </div>

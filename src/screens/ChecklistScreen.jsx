@@ -50,11 +50,6 @@ function PersonRow({ person, onUpdate }) {
 
   return (
     <div className={`border-b border-gray-100 px-4 py-3 flex items-center gap-3 ${statusBg(person)}`}>
-      {/* Avatar */}
-      <div className={`shrink-0 w-9 h-9 rounded-full ${avatarColor(person.name)} flex items-center justify-center`}>
-        <span className="text-white text-xs font-bold">{initials(person.name)}</span>
-      </div>
-
       {/* Name + position */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">

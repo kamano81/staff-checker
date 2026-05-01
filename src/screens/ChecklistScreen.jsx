@@ -106,7 +106,7 @@ function PersonRow({ person, onUpdate }) {
         {!person.checkedIn && (
           <button
             onClick={checkIn}
-            className="w-12 h-12 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors"
+            className="w-10 h-10 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors"
           >
             IN
           </button>
@@ -117,7 +117,7 @@ function PersonRow({ person, onUpdate }) {
             <span className="text-xs font-semibold text-green-600">IN {fmt(person.checkedInAt)}</span>
             <button
               onClick={checkOut}
-              className="w-12 h-12 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-bold rounded-xl transition-colors"
+              className="w-10 h-10 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-bold rounded-xl transition-colors"
             >
               UT
             </button>

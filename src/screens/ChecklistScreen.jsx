@@ -28,25 +28,30 @@ function PersonCard({ person, onUpdate }) {
     : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-300 focus:border-gray-400'
 
   return (
-    <div className={`${cardBg} rounded-2xl px-4 py-3 flex items-center gap-3 transition-colors`}>
-      {/* Name + info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <p className={`font-black text-[15px] leading-tight truncate ${nameColor}`}>
-            {person.name || '(inget namn)'}
-          </p>
-          {person.roll === 'tl' && (
-            <span className={`shrink-0 text-[9px] font-black px-2 py-0.5 rounded-full tracking-wide whitespace-nowrap ${isIn ? 'bg-white text-gray-950' : 'bg-gray-950 text-white'}`}>
-              {person.teamleader}
-            </span>
-          )}
-          {person.roll === 'tl-ass' && (
-            <span className={`shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${isIn ? 'border border-gray-600 text-gray-400' : 'border border-gray-300 text-gray-400'}`}>
-              {person.teamleader}
-            </span>
-          )}
+    <div className={`${cardBg} rounded-2xl p-4 flex gap-3 transition-colors`}>
+      {/* Name + info: top/bottom layout */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between gap-3">
+        {/* Top: name + badge */}
+        <div>
+          <div className="flex items-start gap-2 min-w-0 flex-wrap">
+            <p className={`font-black text-[17px] leading-snug ${nameColor}`}>
+              {person.name || '(inget namn)'}
+            </p>
+            {person.roll === 'tl' && (
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-full tracking-wide whitespace-nowrap mt-0.5 ${isIn ? 'bg-white text-gray-950' : 'bg-gray-950 text-white'}`}>
+                {person.teamleader}
+              </span>
+            )}
+            {person.roll === 'tl-ass' && (
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5 ${isIn ? 'border border-gray-600 text-gray-400' : 'border border-gray-300 text-gray-400'}`}>
+                {person.teamleader}
+              </span>
+            )}
+          </div>
         </div>
-        <p className={`text-[11px] mt-0.5 truncate ${subColor}`}>
+
+        {/* Bottom: position · tl · tid */}
+        <p className={`text-[12px] font-medium leading-tight ${subColor}`}>
           {person.roll === 'tl' || person.roll === 'tl-ass'
             ? [person.passStart, person.passEnd].filter(Boolean).join('–')
             : [abbr(person.position), person.teamleader, [person.passStart, person.passEnd].filter(Boolean).join('–')].filter(Boolean).join(' · ')
@@ -54,49 +59,52 @@ function PersonCard({ person, onUpdate }) {
         </p>
       </div>
 
-      {/* Radio + Kort */}
-      <div className="flex gap-1.5 shrink-0">
-        {['Radio', 'Kort'].map((label, i) => (
-          <div key={label} className="flex flex-col items-center gap-0.5">
-            <span className={`text-[9px] font-bold uppercase tracking-widest ${labelColor}`}>{label}</span>
-            <input
-              className={`w-12 border rounded-lg px-1.5 py-1.5 text-xs font-bold text-center outline-none transition-colors ${inputCls}`}
-              placeholder="–"
-              value={i === 0 ? person.radio : person.kort}
-              onChange={e => onUpdate(i === 0 ? { radio: e.target.value } : { kort: e.target.value })}
-              inputMode="numeric"
-            />
-          </div>
-        ))}
-      </div>
+      {/* Right side: Radio + Kort + Action */}
+      <div className="shrink-0 flex flex-col items-end justify-between gap-2">
+        {/* Radio + Kort */}
+        <div className="flex gap-1.5">
+          {['Radio', 'Kort'].map((label, i) => (
+            <div key={label} className="flex flex-col items-center gap-0.5">
+              <span className={`text-[9px] font-bold uppercase tracking-widest ${labelColor}`}>{label}</span>
+              <input
+                className={`w-12 border rounded-lg px-1.5 py-1.5 text-xs font-bold text-center outline-none transition-colors ${inputCls}`}
+                placeholder="–"
+                value={i === 0 ? person.radio : person.kort}
+                onChange={e => onUpdate(i === 0 ? { radio: e.target.value } : { kort: e.target.value })}
+                inputMode="numeric"
+              />
+            </div>
+          ))}
+        </div>
 
-      {/* Action */}
-      <div className="shrink-0 flex flex-col items-end gap-1 min-w-[52px]">
-        {!person.checkedIn && (
-          <button onClick={checkIn}
-            className="w-12 h-10 bg-gray-950 text-white text-xs font-black rounded-xl active:scale-95 transition-transform">
-            IN
-          </button>
-        )}
-
-        {isIn && (
-          <>
-            <span className="text-[11px] font-black text-emerald-400 tabular-nums">IN {fmt(person.checkedInAt)}</span>
-            <button onClick={checkOut}
-              className="w-12 h-10 bg-orange-500 text-white text-xs font-black rounded-xl active:scale-95 transition-transform">
-              UT
+        {/* Action */}
+        <div className="flex flex-col items-end gap-1">
+          {!person.checkedIn && (
+            <button onClick={checkIn}
+              className="w-12 h-10 bg-gray-950 text-white text-xs font-black rounded-xl active:scale-95 transition-transform">
+              IN
             </button>
-            <button onClick={undoIn} className="text-[10px] text-gray-600 underline">Ångra</button>
-          </>
-        )}
+          )}
 
-        {isOut && (
-          <>
-            <span className="text-[10px] text-gray-400 tabular-nums">IN {fmt(person.checkedInAt)}</span>
-            <span className="text-[10px] text-gray-400 tabular-nums">UT {fmt(person.checkedOutAt)}</span>
-            <button onClick={undoOut} className="text-[10px] text-gray-400 underline">Ångra</button>
-          </>
-        )}
+          {isIn && (
+            <>
+              <span className="text-[11px] font-black text-emerald-400 tabular-nums">IN {fmt(person.checkedInAt)}</span>
+              <button onClick={checkOut}
+                className="w-12 h-10 bg-orange-500 text-white text-xs font-black rounded-xl active:scale-95 transition-transform">
+                UT
+              </button>
+              <button onClick={undoIn} className="text-[10px] text-gray-600 underline">Ångra</button>
+            </>
+          )}
+
+          {isOut && (
+            <>
+              <span className="text-[10px] text-gray-400 tabular-nums">IN {fmt(person.checkedInAt)}</span>
+              <span className="text-[10px] text-gray-400 tabular-nums">UT {fmt(person.checkedOutAt)}</span>
+              <button onClick={undoOut} className="text-[10px] text-gray-400 underline">Ångra</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

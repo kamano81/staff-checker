@@ -19,92 +19,116 @@ function PersonCard({ person, onUpdate }) {
   const isIn  = person.checkedIn && !person.checkedOut
   const isOut = person.checkedOut
 
-  return (
-    <div className={`
-      rounded-3xl px-5 py-4 flex gap-4 transition-all
-      ${isIn  ? 'bg-[#1D1D1F] shadow-lg shadow-black/10' : ''}
-      ${isOut ? 'bg-white shadow-sm shadow-black/5 opacity-40' : ''}
-      ${!isIn && !isOut ? 'bg-white shadow-sm shadow-black/5' : ''}
-    `}>
+  const cardBg   = isIn || isOut ? '#e8e8e6' : '#f1f1ef'
+  const fieldBg  = isIn || isOut ? '#ededeb' : '#ffffff'
+  const nameCls  = isIn || isOut ? 'text-[#6a6a67]' : 'text-[#0a0a0a]'
+  const inputCls = isIn || isOut ? 'text-[#6a6a67]' : 'text-[#0a0a0a]'
 
-      {/* Left column */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between gap-5">
-        <div>
-          <p className={`font-semibold text-[17px] leading-snug ${isIn ? 'text-white' : 'text-[#1D1D1F]'}`}>
+  const metaParts = person.roll === 'tl' || person.roll === 'tl-ass'
+    ? [person.roll === 'tl' ? 'TL' : 'TL Ass', person.teamleader].filter(Boolean)
+    : [abbr(person.position), person.teamleader].filter(Boolean)
+
+  const timeStr = [person.passStart, person.passEnd].filter(Boolean).join(' — ')
+
+  return (
+    <div
+      style={{ background: cardBg, borderRadius: 18, padding: '14px 14px 14px 16px', opacity: isOut ? 0.6 : 1 }}
+      className="grid gap-x-3 gap-y-2.5 transition-all"
+      css-grid="1fr auto / auto auto"
+    >
+      {/* Use inline style for grid since arbitrary cols need JIT */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gridTemplateRows: 'auto auto', gap: '10px 12px' }}>
+
+        {/* Name + meta */}
+        <div style={{ gridColumn: 1, gridRow: 1, minWidth: 0 }}>
+          <p className={`font-semibold text-[17px] leading-tight tracking-[-0.01em] truncate ${nameCls}`}>
             {person.name || '(inget namn)'}
           </p>
-          {person.roll === 'tl' && (
-            <span className={`inline-block mt-1.5 text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${
-              isIn ? 'bg-white/10 text-white' : 'bg-[#1D1D1F] text-white'
-            }`}>
-              {person.teamleader}
-            </span>
-          )}
-          {person.roll === 'tl-ass' && (
-            <span className={`inline-block mt-1.5 text-[10px] font-medium px-2.5 py-0.5 rounded-full ${
-              isIn ? 'bg-white/10 text-white/60' : 'bg-[#F5F5F7] text-[#6E6E73]'
-            }`}>
-              {person.teamleader}
-            </span>
-          )}
+          <p className="text-[12px] text-[#6a6a67] mt-0.5 truncate">
+            {metaParts.map((part, i) => (
+              <span key={i}>
+                {i > 0 && <span style={{ color: '#c4c4c1', margin: '0 5px' }}>·</span>}
+                {part}
+              </span>
+            ))}
+          </p>
         </div>
 
-        <p className={`text-[12px] leading-tight ${isIn ? 'text-white/40' : 'text-[#AEAEB2]'}`}>
-          {person.roll === 'tl' || person.roll === 'tl-ass'
-            ? [person.passStart, person.passEnd].filter(Boolean).join('–')
-            : [abbr(person.position), person.teamleader, [person.passStart, person.passEnd].filter(Boolean).join('–')].filter(Boolean).join(' · ')
-          }
-        </p>
-      </div>
+        {/* Time pill */}
+        {timeStr ? (
+          <div style={{ gridColumn: 2, gridRow: 1, alignSelf: 'start' }}
+            className="bg-white rounded-full px-[10px] py-[5px] text-[12px] text-[#1a1a1a] tabular-nums whitespace-nowrap">
+            {timeStr}
+          </div>
+        ) : <div style={{ gridColumn: 2, gridRow: 1 }} />}
 
-      {/* Right column */}
-      <div className="shrink-0 flex flex-col justify-between items-end gap-3">
+        {/* Actions row */}
+        <div style={{ gridColumn: '1 / -1', gridRow: 2, display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 8 }}>
 
-        {/* Radio + Kort */}
-        <div className="flex gap-2">
-          {['Radio', 'Kort'].map((label, i) => (
-            <div key={label} className="flex flex-col items-center gap-1">
-              <span className={`text-[9px] font-medium uppercase tracking-widest ${isIn ? 'text-white/30' : 'text-[#C7C7CC]'}`}>{label}</span>
-              <input
-                className={`w-12 rounded-2xl py-1.5 text-xs font-semibold text-center outline-none transition-colors ${
-                  isIn
-                    ? 'bg-white/10 text-white placeholder-white/20 focus:bg-white/20'
-                    : 'bg-[#F5F5F7] text-[#1D1D1F] placeholder-[#C7C7CC] focus:bg-[#E5E5EA]'
-                }`}
-                placeholder="–"
-                value={i === 0 ? person.radio : person.kort}
-                onChange={e => onUpdate(i === 0 ? { radio: e.target.value } : { kort: e.target.value })}
-                inputMode="numeric"
-              />
-            </div>
-          ))}
-        </div>
+          {/* Radio */}
+          <label className="flex items-center gap-2 rounded-xl px-[10px] py-2 min-w-0"
+            style={{ background: fieldBg }}>
+            <span className="text-[11px] text-[#8a8a87] uppercase tracking-[0.02em] font-medium shrink-0">Radio</span>
+            <input
+              className={`flex-1 min-w-0 text-right text-[14px] font-medium bg-transparent outline-none border-none font-[inherit] ${inputCls} placeholder-[#c4c4c1]`}
+              type="text"
+              inputMode="numeric"
+              placeholder="Nr"
+              value={person.radio}
+              onChange={e => onUpdate({ radio: e.target.value })}
+              disabled={isIn || isOut}
+            />
+          </label>
 
-        {/* Action */}
-        <div className="flex flex-col items-end gap-1.5">
-          {!person.checkedIn && (
-            <button onClick={checkIn}
-              className="px-4 h-9 bg-[#0071E3] text-white text-[13px] font-semibold rounded-full active:opacity-75 transition-opacity">
-              Checka in
-            </button>
-          )}
-          {isIn && (
-            <>
-              <span className="text-[11px] font-medium text-[#30D158] tabular-nums">IN {fmt(person.checkedInAt)}</span>
-              <button onClick={checkOut}
-                className="px-4 h-9 bg-[#FF3B30] text-white text-[13px] font-semibold rounded-full active:opacity-75 transition-opacity">
-                Checka ut
+          {/* Kort */}
+          <label className="flex items-center gap-2 rounded-xl px-[10px] py-2 min-w-0"
+            style={{ background: fieldBg }}>
+            <span className="text-[11px] text-[#8a8a87] uppercase tracking-[0.02em] font-medium shrink-0">Kort</span>
+            <input
+              className={`flex-1 min-w-0 text-right text-[14px] font-medium bg-transparent outline-none border-none font-[inherit] ${inputCls} placeholder-[#c4c4c1]`}
+              type="text"
+              inputMode="numeric"
+              placeholder="Nr"
+              value={person.kort}
+              onChange={e => onUpdate({ kort: e.target.value })}
+              disabled={isIn || isOut}
+            />
+          </label>
+
+          {/* Action button */}
+          <div className="flex flex-col items-stretch gap-1">
+            {!person.checkedIn && (
+              <button onClick={checkIn}
+                className="bg-[#0a0a0a] text-white rounded-xl px-4 h-full text-[13px] font-medium whitespace-nowrap active:scale-[0.97] transition-transform">
+                Checka in
               </button>
-              <button onClick={undoIn} className="text-[11px] text-white/30 underline underline-offset-2">Ångra</button>
-            </>
-          )}
-          {isOut && (
-            <>
-              <span className="text-[11px] text-[#AEAEB2] tabular-nums">IN {fmt(person.checkedInAt)}</span>
-              <span className="text-[11px] text-[#AEAEB2] tabular-nums">UT {fmt(person.checkedOutAt)}</span>
-              <button onClick={undoOut} className="text-[11px] text-[#AEAEB2] underline underline-offset-2">Ångra</button>
-            </>
-          )}
+            )}
+            {isIn && (
+              <>
+                <button disabled
+                  className="bg-[#1a5a3a] text-white rounded-xl px-3 py-2 text-[13px] font-medium whitespace-nowrap">
+                  ✓ Incheckad
+                </button>
+                <button onClick={checkOut}
+                  className="text-[11px] text-[#8a8a87] underline underline-offset-2 text-center">
+                  Checka ut
+                </button>
+              </>
+            )}
+            {isOut && (
+              <>
+                <div className="text-[11px] text-[#6a6a67] text-right tabular-nums leading-tight">
+                  <div>IN {fmt(person.checkedInAt)}</div>
+                  <div>UT {fmt(person.checkedOutAt)}</div>
+                </div>
+                <button onClick={undoOut}
+                  className="text-[11px] text-[#8a8a87] underline underline-offset-2 text-center">
+                  Ångra
+                </button>
+              </>
+            )}
+          </div>
+
         </div>
       </div>
     </div>
@@ -183,101 +207,104 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
     out:   people.filter(p => p.checkedOut).length,
   }
 
-  const chip = active => active
-    ? 'bg-[#1D1D1F] text-white font-semibold shadow-sm'
-    : 'bg-white text-[#1D1D1F] font-medium shadow-sm shadow-black/5'
+  // Pill style matching the mockup
+  const chip = active => ({
+    background: active ? '#0a0a0a' : '#f1f1ef',
+    color: active ? '#ffffff' : '#0a0a0a',
+    fontWeight: active ? 600 : 500,
+    borderRadius: 999,
+    padding: '6px 14px',
+    fontSize: 13,
+    border: 'none',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
+  })
 
   return (
-    <div className="flex flex-col min-h-svh bg-[#F2F2F7]">
+    <div style={{ background: '#d9d9d6', minHeight: '100svh', fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif" }}>
 
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-[#F2F2F7]">
-        <div className="flex items-center justify-between px-5 pt-5 pb-3">
-          <button onClick={onBack} className="text-[#0071E3] font-medium text-[15px]">← Redigera</button>
-          <div className="text-[13px] font-medium text-center">
-            <span className="text-[#30D158]">{stats.in} inne</span>
-            <span className="text-[#C7C7CC]"> · </span>
-            <span className="text-[#6E6E73]">{stats.out} slutat</span>
-            <span className="text-[#C7C7CC]"> · </span>
-            <span className="text-[#AEAEB2]">{stats.total - stats.in - stats.out} väntar</span>
-          </div>
-          <div className="flex gap-3 items-center">
-            <button onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }}
-              className="text-[#6E6E73] font-medium text-[15px]">Rensa</button>
-            <button onClick={onExport}
-              className="bg-[#0071E3] text-white text-[13px] font-semibold px-4 py-1.5 rounded-full active:opacity-75 transition-opacity">
-              Export
+      {/* Sticky header */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#d9d9d6', paddingTop: 16 }}>
+        <div style={{ maxWidth: 460, margin: '0 auto', padding: '0 16px' }}>
+
+          {/* Top bar */}
+          <div className="flex items-center justify-between pb-3">
+            <button onClick={onBack} style={{ color: '#0a0a0a', fontWeight: 500, fontSize: 15, background: 'none', border: 'none', cursor: 'pointer' }}>
+              ← Redigera
             </button>
-          </div>
-        </div>
-
-        {/* Search */}
-        <div className="px-4 pb-3 flex gap-2">
-          <input
-            type="search"
-            placeholder="Sök namn eller position…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-white shadow-sm shadow-black/5 rounded-2xl px-4 py-2.5 text-[15px] text-[#1D1D1F] outline-none placeholder-[#C7C7CC] transition-colors"
-          />
-          <button
-            onClick={() => setShowFilters(f => !f)}
-            className={`shrink-0 px-4 py-2 rounded-2xl text-[13px] font-semibold transition-colors shadow-sm ${
-              hasActiveFilters ? 'bg-[#1D1D1F] text-white' : 'bg-white text-[#1D1D1F] shadow-black/5'
-            }`}
-          >
-            Filter{hasActiveFilters ? ' ●' : ''}
-          </button>
-        </div>
-
-        {showFilters && (
-          <div className="px-4 pb-3 flex flex-col gap-3 pt-1">
-            {[
-              { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['tid','Tid']], active: sortBy,       set: setSortBy },
-              { label: 'Roll',    items: ['Alla','personal','tl','tl-ass'].map(r => [r, r === 'Alla' ? 'Alla' : ROLL_LABELS[r]]), active: activeRoll,   set: setActiveRoll },
-              { label: 'Status',  items: ['Alla','Väntar','Inne','Slutat'].map(s => [s,s]),      active: activeStatus, set: setActiveStatus },
-            ].map(({ label, items, active, set }) => (
-              <div key={label} className="flex items-center gap-2">
-                <span className="text-[11px] font-medium text-[#6E6E73] w-14 shrink-0">{label}</span>
-                <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
-                  {items.map(([val, lbl]) => (
-                    <button key={val} onClick={() => set(val)}
-                      className={`shrink-0 px-3 py-1 rounded-full text-[12px] transition-colors ${chip(active === val)}`}>
-                      {lbl}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Area chips */}
-        <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-none">
-          {AREA_TABS.map(({ label }) => (
-            <button key={label} onClick={() => handleAreaChange(label)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-[13px] transition-colors ${chip(activeArea === label)}`}>
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {activeArea !== 'Alla' && (
-          <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-none">
-            {positionTabs.map(pos => (
-              <button key={pos} onClick={() => setActivePosition(pos)}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-[13px] transition-colors ${chip(activePosition === pos)}`}>
-                {pos}
+            <div style={{ fontSize: 13, color: '#6a6a67', tabularNums: true }} className="tabular-nums">
+              {stats.in} / {stats.total} incheckade
+            </div>
+            <div className="flex gap-3 items-center">
+              <button onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }}
+                style={{ color: '#8a8a87', fontWeight: 500, fontSize: 14, background: 'none', border: 'none', cursor: 'pointer' }}>
+                Rensa
               </button>
+              <button onClick={onExport}
+                style={{ background: '#0a0a0a', color: '#fff', fontWeight: 500, fontSize: 13, borderRadius: 999, padding: '6px 14px', border: 'none', cursor: 'pointer' }}>
+                Export
+              </button>
+            </div>
+          </div>
+
+          {/* Search + filter */}
+          <div className="flex gap-2 pb-3">
+            <input
+              type="search"
+              placeholder="Sök namn eller position…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ flex: 1, background: '#f1f1ef', border: 'none', borderRadius: 12, padding: '9px 14px', fontSize: 15, color: '#0a0a0a', outline: 'none', fontFamily: 'inherit' }}
+            />
+            <button
+              onClick={() => setShowFilters(f => !f)}
+              style={{ ...chip(hasActiveFilters), background: hasActiveFilters ? '#0a0a0a' : '#f1f1ef' }}>
+              Filter{hasActiveFilters ? ' ●' : ''}
+            </button>
+          </div>
+
+          {showFilters && (
+            <div className="flex flex-col gap-2.5 pb-3">
+              {[
+                { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['tid','Tid']], active: sortBy,       set: setSortBy },
+                { label: 'Roll',    items: ['Alla','personal','tl','tl-ass'].map(r => [r, r === 'Alla' ? 'Alla' : ROLL_LABELS[r]]), active: activeRoll,   set: setActiveRoll },
+                { label: 'Status',  items: ['Alla','Väntar','Inne','Slutat'].map(s => [s,s]),      active: activeStatus, set: setActiveStatus },
+              ].map(({ label, items, active, set }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <span style={{ fontSize: 11, color: '#8a8a87', width: 56, flexShrink: 0, fontWeight: 500 }}>{label}</span>
+                  <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+                    {items.map(([val, lbl]) => (
+                      <button key={val} onClick={() => set(val)} style={chip(active === val)}>{lbl}</button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Area chips */}
+          <div className="flex gap-2 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none' }}>
+            {AREA_TABS.map(({ label }) => (
+              <button key={label} onClick={() => handleAreaChange(label)} style={chip(activeArea === label)}>{label}</button>
             ))}
           </div>
-        )}
+
+          {activeArea !== 'Alla' && (
+            <div className="flex gap-2 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none' }}>
+              {positionTabs.map(pos => (
+                <button key={pos} onClick={() => setActivePosition(pos)} style={chip(activePosition === pos)}>{pos}</button>
+              ))}
+            </div>
+          )}
+
+        </div>
       </div>
 
-      {/* Cards */}
-      <div className="flex-1 px-4 py-2 flex flex-col gap-2.5 pb-8">
+      {/* Card list */}
+      <div style={{ maxWidth: 460, margin: '0 auto', padding: '0 16px 40px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filtered.length === 0 && (
-          <p className="text-center text-[#AEAEB2] text-[15px] font-medium py-16">Inga resultat</p>
+          <p style={{ textAlign: 'center', color: '#8a8a87', fontSize: 15, fontWeight: 500, padding: '64px 0' }}>Inga resultat</p>
         )}
         {filtered.map(person => (
           <PersonCard key={person.id} person={person} onUpdate={changes => onUpdate(person.id, changes)} />

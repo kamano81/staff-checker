@@ -158,7 +158,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack }) 
   const [activeArea, setActiveArea] = useState('Alla')
   const [activePosition, setActivePosition] = useState('Alla')
   const [activeRoll, setActiveRoll] = useState('Alla')
-  const [activeTime, setActiveTime] = useState('Alla')
+  const [activeStatus, setActiveStatus] = useState('Alla')
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState('namn')
 
@@ -168,9 +168,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack }) 
     ? ['Alla', ...ALL_POSITIONS]
     : ['Alla', ...[...new Set(activeTab.tls.flatMap(tl => getPositionsForTL(tl)))]]
 
-  const uniqueTimes = ['Alla', ...[...new Set(people.map(p => p.passStart).filter(Boolean))].sort()]
-
-  const hasActiveFilters = activeRoll !== 'Alla' || activeTime !== 'Alla' || sortBy !== 'namn'
+  const hasActiveFilters = activeRoll !== 'Alla' || activeStatus !== 'Alla' || sortBy !== 'namn'
 
   function handleAreaChange(label) {
     setActiveArea(a => a === label && label !== 'Alla' ? 'Alla' : label)
@@ -182,7 +180,9 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack }) 
       if (activeArea !== 'Alla' && !activeTab.tls.includes(p.teamleader)) return false
       if (activePosition !== 'Alla' && p.position !== activePosition) return false
       if (activeRoll !== 'Alla' && (p.roll ?? 'personal') !== activeRoll) return false
-      if (activeTime !== 'Alla' && p.passStart !== activeTime) return false
+      if (activeStatus === 'Väntar' && (p.checkedIn || p.checkedOut)) return false
+      if (activeStatus === 'Inne' && !(p.checkedIn && !p.checkedOut)) return false
+      if (activeStatus === 'Slutat' && !p.checkedOut) return false
       if (search) {
         const q = search.toLowerCase()
         return p.name.toLowerCase().includes(q) || p.position.toLowerCase().includes(q)
@@ -288,17 +288,17 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack }) 
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide w-12 shrink-0">Tid</span>
+              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide w-12 shrink-0">Status</span>
               <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
-                {uniqueTimes.map(t => (
+                {['Alla', 'Väntar', 'Inne', 'Slutat'].map(s => (
                   <button
-                    key={t}
-                    onClick={() => setActiveTime(t)}
+                    key={s}
+                    onClick={() => setActiveStatus(s)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      activeTime === t ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'
+                      activeStatus === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'
                     }`}
                   >
-                    {t}
+                    {s}
                   </button>
                 ))}
               </div>

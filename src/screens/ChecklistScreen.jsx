@@ -76,7 +76,7 @@ function PersonRow({ person, onUpdate }) {
       </div>
 
       {/* Radio + Kort */}
-      <div className="flex gap-1.5 shrink-0">
+      <div className="flex gap-1.5 shrink-0 ml-auto">
         <div className="flex flex-col items-center gap-0.5">
           <span className="text-[9px] text-gray-400 uppercase tracking-wide">Radio</span>
           <input

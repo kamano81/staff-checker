@@ -38,7 +38,7 @@ const S = {
   fieldMuted: { display: 'flex', alignItems: 'center', background: '#f5f5f7', borderRadius: 10, padding: '7px 10px', gap: 8, minWidth: 0 },
   label:      { fontSize: 11, color: '#6e6e73', fontWeight: 500, flexShrink: 0 },
   labelMuted: { fontSize: 11, color: '#8e8e93', fontWeight: 500, flexShrink: 0 },
-  input:      { flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 13, fontWeight: 500, color: '#1d1d1f', fontFamily: 'inherit', textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 },
+  input:      { flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 500, color: '#1d1d1f', fontFamily: 'inherit', textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 },
   pillBtn:    (bg) => ({ background: bg, color: '#fff', border: 'none', borderRadius: 980, padding: '0 14px', height: 32, fontSize: 12, fontWeight: 500, fontFamily: 'inherit', letterSpacing: '-0.005em', cursor: 'pointer', whiteSpace: 'nowrap' }),
 }
 

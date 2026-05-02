@@ -32,7 +32,7 @@ const FilterIcon = () => (
   </svg>
 )
 
-// ── Card styles ────────────────────────────────────────────────────────────
+// ── Card ───────────────────────────────────────────────────────────────────
 const S = {
   field:      { display: 'flex', alignItems: 'center', background: '#ffffff', borderRadius: 10, padding: '7px 10px', gap: 8, minWidth: 0 },
   fieldMuted: { display: 'flex', alignItems: 'center', background: '#f5f5f7', borderRadius: 10, padding: '7px 10px', gap: 8, minWidth: 0 },
@@ -111,7 +111,7 @@ function PersonCard({ person, onUpdate }) {
           </div>
         )}
 
-        {/* CHECKED IN — click ✓ in time pill to undo */}
+        {/* CHECKED IN */}
         {isIn && (
           <div style={{ gridColumn: '1 / -1', gridRow: 2, display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 6 }}>
             <label style={S.field}>
@@ -140,9 +140,7 @@ function PersonCard({ person, onUpdate }) {
               <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: '#6e6e73', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.kort || '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 4px', whiteSpace: 'nowrap' }}>
-              <span
-                onClick={undoOut}
-                title="Klicka för att ångra utcheckning"
+              <span onClick={undoOut} title="Klicka för att ångra utcheckning"
                 style={{ width: 16, height: 16, borderRadius: '50%', background: '#8e8e93', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0, cursor: 'pointer' }}>
                 ✓
               </span>
@@ -152,13 +150,12 @@ function PersonCard({ person, onUpdate }) {
             </div>
           </div>
         )}
-
       </div>
     </div>
   )
 }
 
-// ── Tabs & filter ──────────────────────────────────────────────────────────
+// ── Data ───────────────────────────────────────────────────────────────────
 const AREA_TABS = [
   { label: 'Alla',   tls: [] },
   { label: 'Norr',   tls: ['TL Norr'] },
@@ -169,7 +166,6 @@ const AREA_TABS = [
   { label: 'Rond',   tls: ['TL Rond'] },
 ]
 const ROLL_LABELS = { personal: 'Personal', tl: 'TL', 'tl-ass': 'TL Ass' }
-
 const FF = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif"
 
 function chip(active) {
@@ -179,12 +175,13 @@ function chip(active) {
 function IconBtn({ onClick, active, title, children }) {
   return (
     <button onClick={onClick} title={title}
-      style={{ width: 36, height: 36, borderRadius: '50%', background: active ? '#1d1d1f' : '#f0f0f2', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: active ? '#fff' : '#1d1d1f', flexShrink: 0, fontFamily: FF }}>
+      style={{ width: 34, height: 34, borderRadius: '50%', background: active ? '#8c52d6' : '#1d1d1f', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#ffffff', flexShrink: 0, fontFamily: FF }}>
       {children}
     </button>
   )
 }
 
+// ── Screen ─────────────────────────────────────────────────────────────────
 export default function ChecklistScreen({ people, onUpdate, onExport, onBack, onReset }) {
   const [search, setSearch]                 = useState('')
   const [activeArea, setActiveArea]         = useState('Alla')
@@ -196,10 +193,10 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
 
   const activeTab    = AREA_TABS.find(t => t.label === activeArea) ?? AREA_TABS[0]
   const positionTabs = activeArea === 'Alla'
-    ? ['Alla', ...ALL_POSITIONS]
-    : ['Alla', ...[...new Set(activeTab.tls.flatMap(tl => getPositionsForTL(tl)))]]
+    ? []
+    : [...new Set(activeTab.tls.flatMap(tl => getPositionsForTL(tl)))]
 
-  const hasActiveFilters = activeRoll !== 'Alla' || activeStatus !== 'Alla' || sortBy !== 'namn'
+  const hasActiveFilters = activeRoll !== 'Alla' || activeStatus !== 'Alla' || sortBy !== 'namn' || activeArea !== 'Alla' || activePosition !== 'Alla'
 
   function handleAreaChange(label) {
     setActiveArea(a => a === label && label !== 'Alla' ? 'Alla' : label)
@@ -252,37 +249,30 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
       <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#ffffff' }}>
         <div style={{ maxWidth: 480, margin: '0 auto', padding: '16px 16px 0' }}>
 
-          {/* Title + sub */}
-          <div style={{ padding: '4px 4px 10px' }}>
-            <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.022em', color: '#1d1d1f', margin: 0, lineHeight: 1.1 }}>Incheckning</h1>
-            <div style={{ fontSize: 13, color: '#6e6e73', marginTop: 3, letterSpacing: '-0.01em', fontVariantNumeric: 'tabular-nums' }}>
-              {stats.in} incheckade · {stats.out} klara · {stats.total} totalt
+          {/* Title row + icon buttons */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '4px 4px 12px', gap: 12 }}>
+            <div>
+              <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.022em', color: '#1d1d1f', margin: 0, lineHeight: 1.1 }}>Incheckning</h1>
+              <div style={{ fontSize: 13, color: '#6e6e73', marginTop: 3, letterSpacing: '-0.01em', fontVariantNumeric: 'tabular-nums' }}>
+                {stats.in} incheckade · {stats.out} klara · {stats.total} totalt
+              </div>
             </div>
-          </div>
-
-          {/* Icon button row */}
-          <div style={{ display: 'flex', gap: 8, paddingBottom: 10, alignItems: 'center' }}>
-            <IconBtn onClick={onBack} title="Redigera lista">
-              <BackIcon />
-            </IconBtn>
-            <IconBtn onClick={() => setShowFilters(f => !f)} active={showFilters || hasActiveFilters} title="Filter">
-              <FilterIcon />
-            </IconBtn>
-            <IconBtn onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }} title="Rensa">
-              <TrashIcon />
-            </IconBtn>
-            <IconBtn onClick={onExport} title="Exportera">
-              <ExportIcon />
-            </IconBtn>
+            <div style={{ display: 'flex', gap: 8, paddingTop: 2 }}>
+              <IconBtn onClick={onBack} title="Redigera lista"><BackIcon /></IconBtn>
+              <IconBtn onClick={() => setShowFilters(f => !f)} active={showFilters || hasActiveFilters} title="Filter"><FilterIcon /></IconBtn>
+              <IconBtn onClick={() => { if (confirm('Rensa all data och börja om?')) onReset() }} title="Rensa"><TrashIcon /></IconBtn>
+              <IconBtn onClick={onExport} title="Exportera"><ExportIcon /></IconBtn>
+            </div>
           </div>
 
           {/* Filter panel */}
           {showFilters && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 12, borderTop: '1px solid #f0f0f2', paddingTop: 12 }}>
               {[
                 { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['tid','Tid']], active: sortBy,       set: setSortBy },
                 { label: 'Roll',    items: ['Alla','personal','tl','tl-ass'].map(r => [r, r === 'Alla' ? 'Alla' : ROLL_LABELS[r]]), active: activeRoll,   set: setActiveRoll },
                 { label: 'Status',  items: ['Alla','Väntar','Inne','Slutat'].map(s => [s,s]),      active: activeStatus, set: setActiveStatus },
+                { label: 'Område',  items: AREA_TABS.map(t => [t.label, t.label]),                active: activeArea,   set: handleAreaChange },
               ].map(({ label, items, active, set }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 11, color: '#6e6e73', width: 52, flexShrink: 0, fontWeight: 500 }}>{label}</span>
@@ -293,40 +283,26 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
                   </div>
                 </div>
               ))}
+
+              {/* Position row — only when area selected */}
+              {activeArea !== 'Alla' && positionTabs.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 11, color: '#6e6e73', width: 52, flexShrink: 0, fontWeight: 500 }}>Position</span>
+                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none' }}>
+                    {[['Alla','Alla'], ...positionTabs.map(p => [p,p])].map(([val, lbl]) => (
+                      <button key={val} onClick={() => setActivePosition(val)} style={chip(activePosition === val)}>{lbl}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
-
-          {/* Area chips */}
-          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 10 }}>
-            {AREA_TABS.map(({ label }) => (
-              <button key={label} onClick={() => handleAreaChange(label)} style={chip(activeArea === label)}>{label}</button>
-            ))}
-          </div>
-
-          {activeArea !== 'Alla' && (
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 10 }}>
-              {positionTabs.map(pos => (
-                <button key={pos} onClick={() => setActivePosition(pos)} style={chip(activePosition === pos)}>{pos}</button>
-              ))}
-            </div>
-          )}
-
-          {/* Search — bottom of header, taller */}
-          <div style={{ paddingBottom: 12 }}>
-            <input
-              type="search"
-              placeholder="Sök namn eller position…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ width: '100%', background: '#f5f5f7', border: 'none', borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1d1d1f', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
-            />
-          </div>
 
         </div>
       </div>
 
       {/* ── Cards ─────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 16px 48px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '4px 16px 100px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {filtered.length === 0 && (
           <p style={{ textAlign: 'center', color: '#8e8e93', fontSize: 15, fontWeight: 500, padding: '64px 0' }}>Inga resultat</p>
         )}
@@ -334,6 +310,20 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
           <PersonCard key={person.id} person={person} onUpdate={changes => onUpdate(person.id, changes)} />
         ))}
       </div>
+
+      {/* ── Fixed search at bottom ─────────────────────────────────── */}
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30, background: '#ffffff', borderTop: '1px solid #f0f0f2', padding: '10px 16px 10px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+        <div style={{ maxWidth: 480, margin: '0 auto' }}>
+          <input
+            type="search"
+            placeholder="Sök namn eller position…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', background: '#f5f5f7', border: 'none', borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1d1d1f', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
+          />
+        </div>
+      </div>
+
     </div>
   )
 }

@@ -15,19 +15,20 @@ function load() {
   } catch { return null }
 }
 
-function save(screen, people) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ screen, people }))
+function save(screen, people, eventName) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ screen, people, eventName }))
 }
 
 export default function App() {
   const saved = load()
-  const [screen, setScreen] = useState(saved?.screen ?? 'setup')
-  const [people, setPeople] = useState(saved?.people ?? [])
+  const [screen, setScreen]       = useState(saved?.screen ?? 'setup')
+  const [people, setPeople]       = useState(saved?.people ?? [])
+  const [eventName, setEventName] = useState(saved?.eventName ?? '')
   const [showExport, setShowExport] = useState(false)
 
   useEffect(() => {
-    save(screen, people)
-  }, [screen, people])
+    save(screen, people, eventName)
+  }, [screen, people, eventName])
 
   function updatePerson(id, changes) {
     setPeople(prev => prev.map(p => p.id === id ? { ...p, ...changes } : p))
@@ -36,13 +37,15 @@ export default function App() {
   function reset() {
     localStorage.removeItem(STORAGE_KEY)
     setPeople([])
+    setEventName('')
     setScreen('setup')
   }
 
   if (screen === 'setup') {
     return (
       <SetupScreen
-        onDone={parsed => { setPeople(parsed); setScreen('edit') }}
+        eventName={eventName}
+        onDone={(parsed, name) => { setPeople(parsed); setEventName(name); setScreen('edit') }}
       />
     )
   }
@@ -61,6 +64,7 @@ export default function App() {
     <>
       <ChecklistScreen
         people={people}
+        eventName={eventName}
         onUpdate={updatePerson}
         onExport={() => setShowExport(true)}
         onBack={() => setScreen('edit')}

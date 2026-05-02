@@ -23,8 +23,9 @@ function parseNames(text) {
     }))
 }
 
-export default function SetupScreen({ onDone }) {
-  const [text, setText] = useState('')
+export default function SetupScreen({ eventName: savedEvent, onDone }) {
+  const [text, setText]   = useState('')
+  const [event, setEvent] = useState(savedEvent ?? '')
   const [error, setError] = useState('')
 
   function handleContinue() {
@@ -33,17 +34,31 @@ export default function SetupScreen({ onDone }) {
       setError('Klistra in minst ett namn.')
       return
     }
-    onDone(people)
+    onDone(people, event.trim())
   }
 
   return (
     <div className="flex flex-col min-h-svh bg-gray-50 p-4">
       <div className="max-w-lg mx-auto w-full flex flex-col gap-6 py-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Personal</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Nytt skift</h1>
           <p className="text-gray-500 mt-1 text-sm">
             Fotografera personallistan, använd Live Text för att kopiera namnen, och klistra in nedan.
           </p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-100">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Evenemangsnamn</p>
+          </div>
+          <input
+            className="w-full p-4 text-gray-900 text-base outline-none"
+            placeholder="t.ex. HIF – Malmö"
+            value={event}
+            onChange={e => setEvent(e.target.value)}
+            autoCorrect="off"
+            spellCheck={false}
+          />
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">

@@ -10,6 +10,12 @@ function abbr(text) {
   return (text ?? '').replace(/Entré /g, 'E ').replace(/Hiss /g, 'H ').replace(/Plan /g, 'P ')
 }
 
+function initials(name) {
+  const parts = (name ?? '').trim().split(/\s+/)
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase()
+}
+
 // ── Icons ──────────────────────────────────────────────────────────────────
 const MenuIcon = () => (
   <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
@@ -41,7 +47,7 @@ const CheckCircleIcon = () => (
 )
 
 // ── Constants ──────────────────────────────────────────────────────────────
-const FF    = "'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif"
+const FF    = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
 const LIME  = '#ACF532'
 const BG    = '#0e0e0e'
 const CARD  = '#1c1c1e'
@@ -74,21 +80,17 @@ function PersonCard({ person, onUpdate }) {
     ? [person.teamleader].filter(Boolean)
     : [abbr(person.position), person.teamleader].filter(Boolean)
 
-  const iconBg     = isIn ? LIME : DIM
-  const iconColor  = isIn ? BG : isOut ? '#5a5a5c' : LIME
-  const CardIcon   = isIn ? CheckIcon : isOut ? CheckCircleIcon : ClockIcon
+  const iconBg    = isIn ? LIME : DIM
+  const iconColor = isIn ? BG : isOut ? '#5a5a5c' : LIME
+  const CardIcon  = isIn ? CheckIcon : isOut ? CheckCircleIcon : ClockIcon
 
-  const fieldStyle = {
-    background: isOut ? 'transparent' : DIM,
-    border: isOut ? `1px solid ${DIM}` : 'none',
-    borderRadius: 12, padding: '8px 12px',
-    display: 'flex', alignItems: 'center', gap: 8, minWidth: 0,
-  }
+  const fieldBg = isOut ? 'transparent' : DIM
+  const fieldBorder = isOut ? `1px solid ${DIM}` : 'none'
 
   return (
-    <div style={{ background: CARD, borderRadius: 20, padding: 14, opacity: isOut ? 0.7 : 1 }}>
-      {/* Top row: icon | info | time */}
+    <div style={{ background: CARD, borderRadius: 20, padding: 14 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr auto', alignItems: 'center', gap: 12 }}>
+
         <div style={{ width: 44, height: 44, borderRadius: 14, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: iconColor, flexShrink: 0 }}>
           <CardIcon />
         </div>
@@ -111,7 +113,6 @@ function PersonCard({ person, onUpdate }) {
           </p>
         </div>
 
-        {/* Time — click to undo check-in */}
         <div onClick={isIn ? undoIn : undefined} title={isIn ? 'Klicka för att ångra incheckning' : undefined}
           style={{ textAlign: 'right', cursor: isIn ? 'pointer' : 'default' }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: timeColor, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em', lineHeight: 1 }}>
@@ -123,22 +124,21 @@ function PersonCard({ person, onUpdate }) {
         </div>
       </div>
 
-      {/* Actions row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 8, marginTop: 14, paddingTop: 14, borderTop: `1px solid ${DIM}`, alignItems: 'center' }}>
-        <label style={fieldStyle}>
+        <label style={{ background: fieldBg, border: fieldBorder, borderRadius: 12, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <span style={{ fontSize: 10, color: MUTED, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>Radio</span>
           {isOut
             ? <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: MUTED, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.radio || '—'}</span>
             : <input type="text" inputMode="numeric" placeholder="—" value={person.radio} onChange={e => onUpdate({ radio: e.target.value })}
-                style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: '#ffffff', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
+                style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: person.radio ? '#fff' : '#5a5a5c', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
           }
         </label>
-        <label style={fieldStyle}>
+        <label style={{ background: fieldBg, border: fieldBorder, borderRadius: 12, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <span style={{ fontSize: 10, color: MUTED, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>Kort</span>
           {isOut
             ? <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: MUTED, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.kort || '—'}</span>
             : <input type="text" inputMode="numeric" placeholder="—" value={person.kort} onChange={e => onUpdate({ kort: e.target.value })}
-                style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: '#ffffff', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
+                style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: person.kort ? '#fff' : '#5a5a5c', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
           }
         </label>
         {!isIn && !isOut && (
@@ -153,7 +153,7 @@ function PersonCard({ person, onUpdate }) {
         )}
         {isOut && (
           <span onClick={undoOut} title="Klicka för att ångra utcheckning"
-            style={{ color: MUTED, fontSize: 12, fontWeight: 600, padding: '8px 16px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            style={{ color: MUTED, fontSize: 12, fontWeight: 600, padding: '8px 16px', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
             ✓ Klar
           </span>
         )}
@@ -181,14 +181,22 @@ function chip(active) {
 function IconBtn({ onClick, active, title, children }) {
   return (
     <button onClick={onClick} title={title}
-      style={{ width: 46, height: 46, borderRadius: '50%', background: active ? LIME : CARD, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: active ? BG : '#ffffff', flexShrink: 0, fontFamily: FF }}>
+      style={{ width: 44, height: 44, borderRadius: '50%', background: active ? LIME : CARD, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: active ? BG : '#ffffff', flexShrink: 0, fontFamily: FF }}>
       {children}
     </button>
   )
 }
 
+const QUICK_PILLS = [
+  { label: 'Alla',   status: 'Alla',   roll: 'Alla' },
+  { label: 'Aktiva', status: 'Inne',   roll: 'Alla' },
+  { label: 'Väntar', status: 'Väntar', roll: 'Alla' },
+  { label: 'TL',     status: 'Alla',   roll: 'tl'   },
+  { label: 'Klara',  status: 'Slutat', roll: 'Alla' },
+]
+
 // ── Screen ─────────────────────────────────────────────────────────────────
-export default function ChecklistScreen({ people, onUpdate, onExport, onBack, onReset }) {
+export default function ChecklistScreen({ people, eventName, onUpdate, onExport, onBack, onReset }) {
   const [search, setSearch]                 = useState('')
   const [activeArea, setActiveArea]         = useState('Alla')
   const [activePosition, setActivePosition] = useState('Alla')
@@ -203,21 +211,13 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
     ? []
     : [...new Set(activeTab.tls.flatMap(tl => getPositionsForTL(tl)))]
 
-  const hasActiveFilters = activeRoll !== 'Alla' || activeStatus !== 'Alla' || sortBy !== 'namn' || activeArea !== 'Alla' || activePosition !== 'Alla'
+  const hasAdvancedFilters = sortBy !== 'namn' || activeArea !== 'Alla' || activePosition !== 'Alla'
 
   function handleAreaChange(label) {
     setActiveArea(a => a === label && label !== 'Alla' ? 'Alla' : label)
     setActivePosition('Alla')
   }
 
-  // Quick status pills
-  const QUICK_PILLS = [
-    { label: 'Alla',    status: 'Alla',   roll: 'Alla' },
-    { label: 'Aktiva',  status: 'Inne',   roll: 'Alla' },
-    { label: 'Väntar',  status: 'Väntar', roll: 'Alla' },
-    { label: 'TL',      status: 'Alla',   roll: 'tl'   },
-    { label: 'Klara',   status: 'Slutat', roll: 'Alla' },
-  ]
   const activePill = QUICK_PILLS.find(p => p.status === activeStatus && p.roll === activeRoll) ?? null
 
   function setQuickPill(pill) {
@@ -263,110 +263,152 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
     })
 
   const stats = {
-    total: people.length,
-    in:    people.filter(p => p.checkedIn && !p.checkedOut).length,
-    out:   people.filter(p => p.checkedOut).length,
+    total:   people.length,
+    in:      people.filter(p => p.checkedIn && !p.checkedOut).length,
+    out:     people.filter(p => p.checkedOut).length,
+    waiting: people.filter(p => !p.checkedIn && !p.checkedOut).length,
   }
+
+  const today = new Date().toLocaleDateString('sv-SE', { day: 'numeric', month: 'long' })
 
   return (
     <div style={{ background: BG, minHeight: '100svh', fontFamily: FF, WebkitFontSmoothing: 'antialiased', color: '#ffffff' }}>
+      <div style={{ maxWidth: 460, margin: '0 auto', padding: '24px 16px 120px' }}>
 
-      {/* ── Sticky header ─────────────────────────────────────────── */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: BG }}>
-        <div style={{ maxWidth: 460, margin: '0 auto', padding: '16px 16px 0' }}>
-
-          {/* Title row + icon buttons */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '4px 4px 14px', gap: 12 }}>
+        {/* ── Top header ────────────────────────────────────────────── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 4px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #2a2a2a, #1a1a1a)', border: `2px solid ${LIME}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+              👋
+            </div>
             <div>
-              <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.025em', color: '#ffffff', margin: 0, lineHeight: 1.1 }}>Incheckning</h1>
-              <div style={{ fontSize: 13, color: MUTED, marginTop: 4, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <span style={{ color: LIME, fontWeight: 700 }}>{stats.in}</span> inne · {stats.out} ute · {stats.total} totalt
+              <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', letterSpacing: '-0.015em', lineHeight: 1.1 }}>Incheckning</div>
+              <div style={{ fontSize: 13, color: MUTED, marginTop: 2, fontWeight: 500 }}>{eventName || 'Skift ikväll'} · {today}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, position: 'relative' }}>
+            <IconBtn onClick={() => setShowFilters(f => !f)} active={showFilters || hasAdvancedFilters} title="Filter"><FilterIcon /></IconBtn>
+            <IconBtn onClick={() => setShowMenu(m => !m)} active={showMenu} title="Meny"><MenuIcon /></IconBtn>
+            {showMenu && (
+              <>
+                <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
+                <div style={{ position: 'absolute', top: 52, right: 0, zIndex: 50, background: CARD, borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', border: `1px solid ${DIM}`, minWidth: 190, overflow: 'hidden' }}>
+                  {[
+                    { label: 'Redigera lista', action: () => { setShowMenu(false); onBack() } },
+                    { label: 'Exportera',       action: () => { setShowMenu(false); onExport() } },
+                    { label: 'Rensa data',      action: () => { setShowMenu(false); if (confirm('Rensa all data och börja om?')) onReset() }, danger: true },
+                  ].map(({ label, action, danger }) => (
+                    <button key={label} onClick={action} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '14px 18px', fontSize: 15, fontWeight: 600, fontFamily: FF, color: danger ? '#ff453a' : '#ffffff', cursor: 'pointer', letterSpacing: '-0.01em' }}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── Advanced filter panel ─────────────────────────────────── */}
+        {showFilters && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, background: CARD, borderRadius: 20, padding: '16px 16px', marginBottom: 20 }}>
+            {[
+              { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['borjar','Börjar'],['slutar','Slutar']], active: sortBy, set: setSortBy },
+              { label: 'Område',  items: AREA_TABS.map(t => [t.label, t.label]), active: activeArea, set: handleAreaChange },
+            ].map(({ label, items, active, set }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: MUTED, width: 52, flexShrink: 0, fontWeight: 600 }}>{label}</span>
+                <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none' }}>
+                  {items.map(([val, lbl]) => (
+                    <button key={val} onClick={() => set(val)} style={chip(active === val)}>{lbl}</button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {activeArea !== 'Alla' && positionTabs.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: MUTED, width: 52, flexShrink: 0, fontWeight: 600 }}>Position</span>
+                <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none' }}>
+                  {[['Alla','Alla'], ...positionTabs.map(p => [p,p])].map(([val, lbl]) => (
+                    <button key={val} onClick={() => setActivePosition(val)} style={chip(activePosition === val)}>{lbl}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Hero stats card ───────────────────────────────────────── */}
+        <div style={{ background: CARD, borderRadius: 24, padding: '18px 18px 16px', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 13, color: MUTED, fontWeight: 500 }}>Status ikväll</div>
+              <div style={{ fontSize: 32, fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1, marginTop: 4 }}>
+                {stats.in} <span style={{ color: DIM }}>/</span> {stats.total}
+              </div>
+              <div style={{ fontSize: 13, color: LIME, fontWeight: 600, marginTop: 6 }}>
+                {stats.out > 0 ? `${stats.out} utcheckade` : `${stats.waiting} väntar`}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 8, paddingTop: 2, position: 'relative' }}>
-              <IconBtn onClick={() => setShowFilters(f => !f)} active={showFilters || (hasActiveFilters && !activePill)} title="Filter"><FilterIcon /></IconBtn>
-              <IconBtn onClick={() => setShowMenu(m => !m)} active={showMenu} title="Meny"><MenuIcon /></IconBtn>
-              {showMenu && (
-                <>
-                  <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
-                  <div style={{ position: 'absolute', top: 54, right: 0, zIndex: 50, background: CARD, borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', border: `1px solid ${DIM}`, minWidth: 190, overflow: 'hidden' }}>
-                    {[
-                      { label: 'Redigera lista', action: () => { setShowMenu(false); onBack() } },
-                      { label: 'Exportera',       action: () => { setShowMenu(false); onExport() } },
-                      { label: 'Rensa data',      action: () => { setShowMenu(false); if (confirm('Rensa all data och börja om?')) onReset() }, danger: true },
-                    ].map(({ label, action, danger }) => (
-                      <button key={label} onClick={action} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '14px 18px', fontSize: 15, fontWeight: 600, fontFamily: FF, color: danger ? '#ff453a' : '#ffffff', cursor: 'pointer', letterSpacing: '-0.01em' }}>
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
           </div>
-
-          {/* Advanced filter panel */}
-          {showFilters && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 14, borderTop: `1px solid ${DIM}`, paddingTop: 14 }}>
-              {[
-                { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['borjar','Börjar'],['slutar','Slutar']], active: sortBy, set: setSortBy },
-                { label: 'Område',  items: AREA_TABS.map(t => [t.label, t.label]), active: activeArea, set: handleAreaChange },
-              ].map(({ label, items, active, set }) => (
-                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 11, color: MUTED, width: 52, flexShrink: 0, fontWeight: 600 }}>{label}</span>
-                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none' }}>
-                    {items.map(([val, lbl]) => (
-                      <button key={val} onClick={() => set(val)} style={chip(active === val)}>{lbl}</button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {activeArea !== 'Alla' && positionTabs.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 11, color: MUTED, width: 52, flexShrink: 0, fontWeight: 600 }}>Position</span>
-                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', scrollbarWidth: 'none' }}>
-                    {[['Alla','Alla'], ...positionTabs.map(p => [p,p])].map(([val, lbl]) => (
-                      <button key={val} onClick={() => setActivePosition(val)} style={chip(activePosition === val)}>{lbl}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Quick filter pills */}
-          <div style={{ display: 'flex', gap: 8, paddingBottom: 12, overflowX: 'auto', scrollbarWidth: 'none' }}>
-            {QUICK_PILLS.map(pill => (
-              <button key={pill.label} onClick={() => setQuickPill(pill)}
-                style={chip(activePill?.label === pill.label)}>
-                {pill.label}
-              </button>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginTop: 4 }}>
+            {[
+              { label: 'Inne',   val: stats.in },
+              { label: 'Ute',    val: stats.out },
+              { label: 'Väntar', val: stats.waiting },
+              { label: 'Totalt', val: stats.total },
+            ].map(({ label, val }) => (
+              <div key={label} style={{ background: DIM, borderRadius: 16, padding: '12px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 18, fontWeight: 700, color: label === 'Inne' ? LIME : '#fff', letterSpacing: '-0.02em' }}>{val}</span>
+                <span style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>{label}</span>
+              </div>
             ))}
           </div>
-
         </div>
+
+        {/* ── Personal section ─────────────────────────────────────── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 4px', marginTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.015em' }}>Personal</div>
+          <span style={{ fontSize: 13, color: MUTED, fontWeight: 500 }}>{filtered.length} st</span>
+        </div>
+
+        {/* Quick filter pills */}
+        <div style={{ display: 'flex', gap: 8, padding: '4px 4px 12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {QUICK_PILLS.map(pill => (
+            <button key={pill.label} onClick={() => setQuickPill(pill)} style={chip(activePill?.label === pill.label)}>
+              {pill.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Cards ──────────────────────────────────────────────────── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {filtered.length === 0 && (
+            <p style={{ textAlign: 'center', color: MUTED, fontSize: 15, fontWeight: 500, padding: '48px 0' }}>Inga resultat</p>
+          )}
+          {filtered.map(person => (
+            <PersonCard key={person.id} person={person} onUpdate={changes => onUpdate(person.id, changes)} />
+          ))}
+        </div>
+
       </div>
 
-      {/* ── Cards ─────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: 460, margin: '0 auto', padding: '4px 16px 100px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {filtered.length === 0 && (
-          <p style={{ textAlign: 'center', color: MUTED, fontSize: 15, fontWeight: 500, padding: '64px 0' }}>Inga resultat</p>
-        )}
-        {filtered.map(person => (
-          <PersonCard key={person.id} person={person} onUpdate={changes => onUpdate(person.id, changes)} />
-        ))}
-      </div>
-
-      {/* ── Fixed search at bottom ─────────────────────────────────── */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 30, background: BG, borderTop: `1px solid ${DIM}`, padding: '10px 16px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
-        <div style={{ maxWidth: 460, margin: '0 auto' }}>
+      {/* ── Floating search at bottom ─────────────────────────────────── */}
+      <div style={{ position: 'fixed', bottom: 'max(24px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', zIndex: 30, width: 'calc(100% - 32px)', maxWidth: 428 }}>
+        <div style={{ background: 'rgba(28,28,30,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderRadius: 999, border: `1px solid ${DIM}`, padding: '4px 8px 4px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MUTED }}>
+            <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
           <input
             type="search"
             placeholder="Sök namn…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', background: CARD, border: 'none', borderRadius: 16, padding: '17px 16px', fontSize: 16, color: '#ffffff', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
+            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 16, color: '#ffffff', fontFamily: FF, letterSpacing: '-0.005em', padding: '10px 0' }}
           />
+          {search && (
+            <button onClick={() => setSearch('')} style={{ background: DIM, border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: MUTED, flexShrink: 0, fontSize: 14 }}>✕</button>
+          )}
         </div>
       </div>
 

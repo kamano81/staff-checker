@@ -254,7 +254,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
             <div>
               <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.022em', color: '#1d1d1f', margin: 0, lineHeight: 1.1 }}>Incheckning</h1>
               <div style={{ fontSize: 13, color: '#6e6e73', marginTop: 3, letterSpacing: '-0.01em', fontVariantNumeric: 'tabular-nums' }}>
-                {stats.in} incheckade · {stats.out} klara · {stats.total} totalt
+                {stats.in} inne · {stats.out} ute · {stats.total} totalt
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, paddingTop: 2 }}>
@@ -319,7 +319,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
             placeholder="Sök namn eller position…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', background: '#f5f5f7', border: 'none', borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1d1d1f', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
+            style={{ width: '100%', background: '#f5f5f7', border: 'none', borderRadius: 16, padding: '17px 16px', fontSize: 15, color: '#1d1d1f', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
           />
         </div>
       </div>

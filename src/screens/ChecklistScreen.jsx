@@ -34,8 +34,8 @@ const FilterIcon = () => (
 
 // ── Card ───────────────────────────────────────────────────────────────────
 const S = {
-  field:      { display: 'flex', alignItems: 'center', background: '#ffffff', borderRadius: 10, padding: '5px 10px', gap: 8, minWidth: 0 },
-  fieldMuted: { display: 'flex', alignItems: 'center', background: '#f5f5f7', borderRadius: 10, padding: '5px 10px', gap: 8, minWidth: 0 },
+  field:      { display: 'flex', alignItems: 'center', background: '#ffffff', borderRadius: 10, padding: '0 10px', height: 32, gap: 8, minWidth: 0 },
+  fieldMuted: { display: 'flex', alignItems: 'center', background: '#f5f5f7', borderRadius: 10, padding: '0 10px', height: 32, gap: 8, minWidth: 0 },
   label:      { fontSize: 11, color: '#6e6e73', fontWeight: 500, flexShrink: 0 },
   labelMuted: { fontSize: 11, color: '#8e8e93', fontWeight: 500, flexShrink: 0 },
   input:      { flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 500, color: '#1d1d1f', fontFamily: 'inherit', textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 },

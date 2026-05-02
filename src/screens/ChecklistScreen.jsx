@@ -341,7 +341,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
             placeholder="Sök namn eller position…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', background: '#f5f5f7', border: 'none', borderRadius: 16, padding: '17px 16px', fontSize: 15, color: '#1d1d1f', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
+            style={{ width: '100%', background: '#f5f5f7', border: 'none', borderRadius: 16, padding: '17px 16px', fontSize: 16, color: '#1d1d1f', outline: 'none', fontFamily: FF, letterSpacing: '-0.005em', boxSizing: 'border-box' }}
           />
         </div>
       </div>

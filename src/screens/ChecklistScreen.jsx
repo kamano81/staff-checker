@@ -87,11 +87,21 @@ function PersonCard({ person, onUpdate }) {
           onClick={isIn ? undoIn : undefined}
           title={isIn ? 'Klicka för att ångra incheckning' : undefined}
           style={{ gridColumn: 2, gridRow: 1, flexShrink: 0, fontSize: 11, fontWeight: 500, background: isOut ? '#e5e5ea' : '#ffffff', borderRadius: 999, padding: '4px 10px', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', letterSpacing: '-0.005em', display: 'inline-flex', alignItems: 'center', gap: 4, cursor: isIn ? 'pointer' : 'default' }}>
-          {isIn && <span style={{ color: '#1a8f3c', fontWeight: 700, fontSize: 11 }}>✓</span>}
-          <span style={{ color: isIn ? '#1a8f3c' : isOut ? '#6e6e73' : '#1d1d1f', fontWeight: isIn ? 600 : 500 }}>
-            {person.passStart || ''}
-          </span>
-          {person.passEnd && <span style={{ color: isOut ? '#6e6e73' : '#1d1d1f' }}> — {person.passEnd}</span>}
+          {(() => {
+            const late = isIn && person.checkedInAt && person.passStart && (() => {
+              const [h, m] = person.passStart.split(':').map(Number)
+              const sched = new Date(person.checkedInAt)
+              sched.setHours(h, m, 0, 0)
+              return new Date(person.checkedInAt) > sched
+            })()
+            const displayStart = late ? fmt(person.checkedInAt) : person.passStart
+            const startColor = late ? '#f56300' : isIn ? '#1a8f3c' : isOut ? '#6e6e73' : '#1d1d1f'
+            return <>
+              {isIn && <span style={{ color: '#1a8f3c', fontWeight: 700, fontSize: 11 }}>✓</span>}
+              <span style={{ color: startColor, fontWeight: isIn ? 600 : 500 }}>{displayStart || ''}</span>
+              {person.passEnd && <span style={{ color: isOut ? '#6e6e73' : '#1d1d1f' }}> — {person.passEnd}</span>}
+            </>
+          })()}
         </div>
 
         {/* DEFAULT */}
@@ -213,7 +223,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
       if (activeStatus === 'Slutat' && !p.checkedOut) return false
       if (search) {
         const q = search.toLowerCase()
-        return p.name.toLowerCase().includes(q) || p.position.toLowerCase().includes(q)
+        return p.name.toLowerCase().split(/\s+/).some(word => word.startsWith(q))
       }
       return true
     })
@@ -229,9 +239,21 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
         const pos = (a.position || 'Ö').localeCompare(b.position || 'Ö', 'sv')
         if (pos !== 0) return pos
       }
-      if (sortBy === 'tid') {
+      if (sortBy === 'pass') {
         const t = (a.passStart ?? '').localeCompare(b.passStart ?? '')
         if (t !== 0) return t
+      }
+      if (sortBy === 'tid-in') {
+        if (!a.checkedInAt && !b.checkedInAt) { /* fall through */ }
+        else if (!a.checkedInAt) return 1
+        else if (!b.checkedInAt) return -1
+        else { const t = a.checkedInAt.localeCompare(b.checkedInAt); if (t !== 0) return t }
+      }
+      if (sortBy === 'tid-ut') {
+        if (!a.checkedOutAt && !b.checkedOutAt) { /* fall through */ }
+        else if (!a.checkedOutAt) return 1
+        else if (!b.checkedOutAt) return -1
+        else { const t = a.checkedOutAt.localeCompare(b.checkedOutAt); if (t !== 0) return t }
       }
       return a.name.localeCompare(b.name, 'sv')
     })
@@ -269,7 +291,7 @@ export default function ChecklistScreen({ people, onUpdate, onExport, onBack, on
           {showFilters && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 12, borderTop: '1px solid #f0f0f2', paddingTop: 12 }}>
               {[
-                { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['tid','Tid']], active: sortBy,       set: setSortBy },
+                { label: 'Sortera', items: [['namn','A–Ö'],['position','Position'],['pass','Pass'],['tid-in','Tid in'],['tid-ut','Tid ut']], active: sortBy, set: setSortBy },
                 { label: 'Roll',    items: ['Alla','personal','tl','tl-ass'].map(r => [r, r === 'Alla' ? 'Alla' : ROLL_LABELS[r]]), active: activeRoll,   set: setActiveRoll },
                 { label: 'Status',  items: ['Alla','Väntar','Inne','Slutat'].map(s => [s,s]),      active: activeStatus, set: setActiveStatus },
                 { label: 'Område',  items: AREA_TABS.map(t => [t.label, t.label]),                active: activeArea,   set: handleAreaChange },

@@ -338,28 +338,18 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
         )}
 
         {/* ── Hero stats card ───────────────────────────────────────── */}
-        <div style={{ background: CARD, borderRadius: 24, padding: '18px 18px 16px', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 13, color: MUTED, fontWeight: 500 }}>Status ikväll</div>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1, marginTop: 4 }}>
-                {stats.in} <span style={{ color: DIM }}>/</span> {stats.total}
-              </div>
-              <div style={{ fontSize: 13, color: LIME, fontWeight: 600, marginTop: 6 }}>
-                {stats.out > 0 ? `${stats.out} utcheckade` : `${stats.waiting} väntar`}
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginTop: 4 }}>
+        <div style={{ background: CARD, border: `1px solid ${DIM}`, borderRadius: 24, padding: '18px 20px 20px', marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: MUTED, fontWeight: 500, marginBottom: 14 }}>Status ikväll</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
             {[
-              { label: 'Inne',   val: stats.in },
-              { label: 'Ute',    val: stats.out },
-              { label: 'Väntar', val: stats.waiting },
-              { label: 'Totalt', val: stats.total },
-            ].map(({ label, val }) => (
-              <div key={label} style={{ background: DIM, borderRadius: 16, padding: '12px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: label === 'Inne' ? LIME : '#fff', letterSpacing: '-0.02em' }}>{val}</span>
-                <span style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>{label}</span>
+              { label: 'Inne',   val: stats.in,      color: LIME },
+              { label: 'Ute',    val: stats.out,     color: '#ff8a4d' },
+              { label: 'Väntar', val: stats.waiting, color: '#ffffff' },
+              { label: 'Totalt', val: stats.total,   color: MUTED },
+            ].map(({ label, val, color }) => (
+              <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                <span style={{ fontSize: 32, fontWeight: 700, color, letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{val}</span>
+                <span style={{ fontSize: 12, color: MUTED, fontWeight: 500, letterSpacing: '-0.005em' }}>{label}</span>
               </div>
             ))}
           </div>

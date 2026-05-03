@@ -130,7 +130,7 @@ function PersonCard({ person, onUpdate }) {
           {isOut
             ? <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: MUTED, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.radio || '—'}</span>
             : <input type="text" inputMode="numeric" placeholder="—" value={person.radio} onChange={e => onUpdate({ radio: e.target.value })}
-                autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+                autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false} tabIndex={-1}
                 style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: person.radio ? '#fff' : '#5a5a5c', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
           }
         </label>
@@ -139,7 +139,7 @@ function PersonCard({ person, onUpdate }) {
           {isOut
             ? <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: MUTED, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.kort || '—'}</span>
             : <input type="text" inputMode="numeric" placeholder="—" value={person.kort} onChange={e => onUpdate({ kort: e.target.value })}
-                autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+                autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false} tabIndex={-1}
                 style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: person.kort ? '#fff' : '#5a5a5c', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
           }
         </label>
@@ -416,7 +416,7 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
               }, 350)
             }}
             autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
-            name="staff-search" data-form-type="other"
+            tabIndex={-1} name="staff-search" data-form-type="other"
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 16, color: '#ffffff', fontFamily: FF, letterSpacing: '-0.005em', padding: '10px 0' }}
           />
           {search && (

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { getPositionsForTL } from '../data/teams'
 
 function fmt(iso) {
@@ -205,6 +205,7 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
   const [showFilters, setShowFilters]       = useState(false)
   const [showMenu, setShowMenu]             = useState(false)
   const [sortBy, setSortBy]                 = useState('namn')
+  const listRef = useRef(null)
 
   const activeTab    = AREA_TABS.find(t => t.label === activeArea) ?? AREA_TABS[0]
   const positionTabs = activeArea === 'Alla'
@@ -371,7 +372,7 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
         </div>
 
         {/* ── Cards ──────────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {filtered.length === 0 && (
             <p style={{ textAlign: 'center', color: MUTED, fontSize: 15, fontWeight: 500, padding: '48px 0' }}>Inga resultat</p>
           )}
@@ -394,6 +395,11 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
             placeholder="Sök namn…"
             value={search}
             onChange={e => setSearch(e.target.value)}
+            onFocus={() => {
+              setTimeout(() => {
+                listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }, 350)
+            }}
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 16, color: '#ffffff', fontFamily: FF, letterSpacing: '-0.005em', padding: '10px 0' }}
           />
           {search && (

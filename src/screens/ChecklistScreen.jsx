@@ -118,7 +118,7 @@ function PersonCard({ person, onUpdate }) {
           <div style={{ fontSize: 16, fontWeight: 700, color: timeColor, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em', lineHeight: 1 }}>
             {displayTime || '—'}
           </div>
-          <div style={{ fontSize: 11, color: isIn ? LIME : MUTED, marginTop: 3, fontWeight: 500, opacity: isIn ? 0.85 : 1 }}>
+          <div style={{ fontSize: 11, color: isIn ? LIME : MUTED, marginTop: 3, fontWeight: 500 }}>
             {timeSub}
           </div>
         </div>

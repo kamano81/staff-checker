@@ -400,14 +400,14 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
 
       {/* ── Floating search at bottom ─────────────────────────────────── */}
       <div style={{ position: 'fixed', bottom: kbBottom > 0 ? kbBottom + 8 : 'max(24px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', zIndex: 30, width: 'calc(100% - 32px)', maxWidth: 428, transition: 'bottom 0.1s ease' }}>
-        <div style={{ background: 'rgba(28,28,30,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderRadius: 999, border: `1px solid ${DIM}`, padding: '4px 8px 4px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <form autoComplete="off" onSubmit={e => e.preventDefault()} style={{ background: 'rgba(28,28,30,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderRadius: 999, border: `1px solid ${DIM}`, padding: '4px 8px 4px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MUTED }}>
             <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
             <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           <input
             type="text"
-            placeholder="Sök namn…"
+            placeholder="Sök…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             onFocus={() => {
@@ -415,13 +415,14 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
                 listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
               }, 350)
             }}
-            autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+            autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+            name="staff-search" data-form-type="other"
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 16, color: '#ffffff', fontFamily: FF, letterSpacing: '-0.005em', padding: '10px 0' }}
           />
           {search && (
-            <button onClick={() => setSearch('')} style={{ background: DIM, border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: MUTED, flexShrink: 0, fontSize: 14 }}>✕</button>
+            <button type="button" onClick={() => setSearch('')} style={{ background: DIM, border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: MUTED, flexShrink: 0, fontSize: 14 }}>✕</button>
           )}
-        </div>
+        </form>
       </div>
 
     </div>

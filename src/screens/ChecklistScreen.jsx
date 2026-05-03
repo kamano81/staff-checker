@@ -88,7 +88,7 @@ function PersonCard({ person, onUpdate }) {
   const fieldBorder = isOut ? `1px solid ${DIM}` : 'none'
 
   return (
-    <div style={{ background: CARD, borderRadius: 20, padding: 14 }}>
+    <div style={{ background: CARD, borderRadius: 20, padding: 14, border: `1px solid ${DIM}` }}>
       <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr auto', alignItems: 'center', gap: 12 }}>
 
         <div style={{ width: 44, height: 44, borderRadius: 14, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: iconColor, flexShrink: 0 }}>
@@ -97,7 +97,7 @@ function PersonCard({ person, onUpdate }) {
 
         <div style={{ minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-            <p style={{ fontSize: 15, fontWeight: 600, color: isOut ? MUTED : '#ffffff', letterSpacing: '-0.015em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, margin: 0 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: isOut ? MUTED : '#ffffff', letterSpacing: '-0.015em', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, margin: 0 }}>
               {person.name || '(inget namn)'}
             </p>
             {isTL && (
@@ -106,7 +106,7 @@ function PersonCard({ person, onUpdate }) {
               </span>
             )}
           </div>
-          <p style={{ fontSize: 12, color: MUTED, fontWeight: 500, margin: '3px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p style={{ fontSize: 12, color: MUTED, fontWeight: 500, lineHeight: 1.2, margin: '2px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {metaParts.map((part, i) => (
               <span key={i}>{i > 0 && <span style={{ margin: '0 4px', color: '#48484a' }}>·</span>}{part}</span>
             ))}
@@ -125,7 +125,7 @@ function PersonCard({ person, onUpdate }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 8, marginTop: 14, paddingTop: 14, borderTop: `1px solid ${DIM}`, alignItems: 'center' }}>
-        <label style={{ background: fieldBg, border: fieldBorder, borderRadius: 12, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+        <label style={{ background: fieldBg, border: fieldBorder, borderRadius: 12, padding: '0 12px', height: 36, display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <span style={{ fontSize: 10, color: MUTED, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>Radio</span>
           {isOut
             ? <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: MUTED, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.radio || '—'}</span>
@@ -133,7 +133,7 @@ function PersonCard({ person, onUpdate }) {
                 style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontWeight: 600, color: person.radio ? '#fff' : '#5a5a5c', fontFamily: FF, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: 0 }} />
           }
         </label>
-        <label style={{ background: fieldBg, border: fieldBorder, borderRadius: 12, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+        <label style={{ background: fieldBg, border: fieldBorder, borderRadius: 12, padding: '0 12px', height: 36, display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <span style={{ fontSize: 10, color: MUTED, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>Kort</span>
           {isOut
             ? <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: MUTED, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{person.kort || '—'}</span>
@@ -142,12 +142,12 @@ function PersonCard({ person, onUpdate }) {
           }
         </label>
         {!isIn && !isOut && (
-          <button onClick={checkIn} style={{ background: LIME, color: BG, border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 700, fontFamily: FF, cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '-0.005em' }}>
+          <button onClick={checkIn} style={{ background: LIME, color: BG, border: 'none', borderRadius: 999, padding: '0 16px', height: 36, fontSize: 12, fontWeight: 700, fontFamily: FF, cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '-0.005em' }}>
             Checka in
           </button>
         )}
         {isIn && (
-          <button onClick={checkOut} style={{ background: '#ff8a4d', color: BG, border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 700, fontFamily: FF, cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '-0.005em' }}>
+          <button onClick={checkOut} style={{ background: '#ff8a4d', color: BG, border: 'none', borderRadius: 999, padding: '0 16px', height: 36, fontSize: 12, fontWeight: 700, fontFamily: FF, cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: '-0.005em' }}>
             Checka ut
           </button>
         )}

@@ -207,8 +207,9 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
   const [showFilters, setShowFilters]       = useState(false)
   const [showMenu, setShowMenu]             = useState(false)
   const [sortBy, setSortBy]                 = useState('namn')
-  const listRef       = useRef(null)
-  const [kbBottom, setKbBottom] = useState(0)
+  const listRef           = useRef(null)
+  const [kbBottom, setKbBottom]       = useState(0)
+  const [searchFocused, setSearchFocused] = useState(false)
 
   useEffect(() => {
     const vv = window.visualViewport
@@ -354,7 +355,7 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
         )}
 
         {/* ── Hero stats card ───────────────────────────────────────── */}
-        <div style={{ background: CARD, border: `1px solid ${DIM}`, borderRadius: 24, padding: '18px 20px 20px', marginBottom: 20 }}>
+        {!searchFocused && !search && <div style={{ background: CARD, border: `1px solid ${DIM}`, borderRadius: 24, padding: '18px 20px 20px', marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: MUTED, fontWeight: 500, marginBottom: 14 }}>Status ikväll</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
             {[
@@ -369,22 +370,22 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
               </div>
             ))}
           </div>
-        </div>
+        </div>}
 
-        {/* ── Personal section ─────────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 4px', marginTop: 4 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.015em' }}>Personal</div>
-          <span style={{ fontSize: 13, color: MUTED, fontWeight: 500 }}>{filtered.length} st</span>
-        </div>
-
-        {/* Quick filter pills */}
-        <div style={{ display: 'flex', gap: 8, padding: '4px 4px 12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {QUICK_PILLS.map(pill => (
-            <button key={pill.label} onClick={() => setQuickPill(pill)} style={chip(activePill?.label === pill.label)}>
-              {pill.label}
-            </button>
-          ))}
-        </div>
+        {/* ── Personal section + pills (döljs vid sökning) ─────────── */}
+        {!searchFocused && !search && <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 4px', marginTop: 4 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.015em' }}>Personal</div>
+            <span style={{ fontSize: 13, color: MUTED, fontWeight: 500 }}>{filtered.length} st</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8, padding: '4px 4px 12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+            {QUICK_PILLS.map(pill => (
+              <button key={pill.label} onClick={() => setQuickPill(pill)} style={chip(activePill?.label === pill.label)}>
+                {pill.label}
+              </button>
+            ))}
+          </div>
+        </>}
 
         {/* ── Cards ──────────────────────────────────────────────────── */}
         <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -410,11 +411,8 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
             placeholder="Sök…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            onFocus={() => {
-              setTimeout(() => {
-                listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }, 350)
-            }}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
             tabIndex={-1} name="staff-search" data-form-type="other"
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 16, color: '#ffffff', fontFamily: FF, letterSpacing: '-0.005em', padding: '10px 0' }}

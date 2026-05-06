@@ -215,12 +215,12 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
     const vv = window.visualViewport
     if (!vv) return
     function update() {
-      const gap = window.innerHeight - vv.height - vv.offsetTop
+      // Only track keyboard height — do NOT subtract vv.offsetTop (changes on scroll and causes the bar to drift)
+      const gap = window.innerHeight - vv.height
       setKbBottom(Math.max(0, gap))
     }
     vv.addEventListener('resize', update)
-    vv.addEventListener('scroll', update)
-    return () => { vv.removeEventListener('resize', update); vv.removeEventListener('scroll', update) }
+    return () => { vv.removeEventListener('resize', update) }
   }, [])
 
   const activeTab    = AREA_TABS.find(t => t.label === activeArea) ?? AREA_TABS[0]
@@ -401,7 +401,7 @@ export default function ChecklistScreen({ people, eventName, onUpdate, onExport,
 
       {/* ── Floating search at bottom ─────────────────────────────────── */}
       <div style={{ position: 'fixed', bottom: kbBottom > 0 ? kbBottom + 8 : 'max(24px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', zIndex: 30, width: 'calc(100% - 80px)', maxWidth: 360, transition: 'bottom 0.1s ease' }}>
-        <form autoComplete="off" onSubmit={e => e.preventDefault()} style={{ background: 'rgba(55,55,58,0.72)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRadius: 999, border: '1px solid rgba(255,255,255,0.10)', padding: '4px 8px 4px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <form autoComplete="off" onSubmit={e => e.preventDefault()} style={{ background: 'rgba(72,72,76,0.62)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRadius: 999, border: '1px solid rgba(255,255,255,0.12)', padding: '4px 8px 4px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MUTED }}>
             <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
             <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
